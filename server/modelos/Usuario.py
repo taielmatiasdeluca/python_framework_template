@@ -5,5 +5,6 @@ from base.models import fields
 class Usuario(baseModel.BaseModel):
     table_name = "dioslli"
 
-    username = fields.Char()
+    username = fields.Char(length=10)
     password = fields.Char()
+    edad = fields.Integrer()

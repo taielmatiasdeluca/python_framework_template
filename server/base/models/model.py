@@ -34,19 +34,67 @@ class Model:
             for name, propierty in vars(objt.__class__).items():
                 if not name.startswith("__"):
                     if isinstance(propierty, fields.Field):
-                        col_type = propierty.col_type
-                        primary_key = "PRIMARY KEY" if propierty.primary_key else ""
-
-                        propierty_query = f"{name} {col_type} {primary_key}"
-                        fields_sql.append(propierty_query)
+                        fields_sql.append(self._prepare_field_query(name, propierty))
             sql = ",\n".join(fields_sql)
             sql = f"CREATE TABLE {table_name} (\n{sql}\n);"
             res = self.database.query(sql)
-            print(res)
         else:
             # La tabla existe, verificar que no haya cambios en el modelo
             table_related = next(
                 filter(lambda table: table.name == table_name, self.database.tables),
                 None,
             )
-            print(table_related)
+            add_fields = []
+            changes_fields = []
+            for name, propierty in vars(objt.__class__).items():
+                if not name.startswith("__"):
+                    if isinstance(propierty, fields.Field):
+                        # Campo dentro de la tabla
+                        field = next(
+                            (
+                                field
+                                for field in table_related.fields
+                                if field.name == name
+                            ),
+                            None,
+                        )
+                        if field:
+                            # TODO: implementar cambios en el campo
+                            pass
+                        else:
+                            # Creamos el campo
+                            changes_fields.append(
+                                self._prepare_create_field_query(name, propierty)
+                            )
+            # al terminar de calcular los campos, se genera la query correspondiente,
+            if changes_fields:
+                sql = ",\n".join(changes_fields)
+                sql = f"ALTER TABLE {table_name} \n{sql};"
+                logger.info(
+                    f'Se detectaron cambios sobre el modelo "{table_name}", se ejecuta la siguiente query {sql}'
+                )
+                res = self.database.query(sql)
+
+    def _prepare_create_field_query(self, col_name, propierty, edit=0):
+        # TODO: implementar mas opciones, null default, etc.
+        length = f"({propierty.length})" if propierty.length else ""
+        col_type = propierty.col_type
+        primary_key = propierty.primary_key
+
+        query = f"ADD {col_name} {col_type}{length}"
+        return query
+
+    def _prepare_modify_field_query(self, col_name, propierty, edit=0):
+        # TODO: implementar mas opciones, null default, etc.
+        col_type = propierty.col_type
+        primary_key = propierty.primary_key
+        length = f"({propierty.length})" if propierty.length else ""
+        query = f"MODIFY COLUMN {col_name} {col_type}{length}"
+        return query
+
+    def _prepare_field_query(self, col_name, propierty, edit=0):
+        # TODO: implementar mas opciones, null default, etc.
+        col_type = propierty.col_type
+        primary_key = "PRIMARY KEY" if propierty.primary_key else ""
+        propierty_query = f"{col_name} {col_type} {primary_key}"
+        return propo
