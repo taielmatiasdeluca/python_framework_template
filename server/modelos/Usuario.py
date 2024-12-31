@@ -7,4 +7,3 @@ class Usuario(baseModel.BaseModel):
 
     username = fields.Char(length=10)
     password = fields.Char()
-    edad = fields.Integrer()

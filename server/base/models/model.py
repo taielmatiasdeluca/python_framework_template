@@ -67,6 +67,14 @@ class Model:
                                 self._prepare_create_field_query(name, propierty)
                             )
             # al terminar de calcular los campos, se genera la query correspondiente,
+
+            # Verificamos que no haya campos en la base de datos, que no se utilicen.
+            object_fields = [name for name, propierty in vars(objt.__class__).items()]
+            for field in table_related.fields:
+                if not field.name in object_fields:
+                    # Se encontro un campo que tiene que ser eliminado.
+                    changes_fields.append(self._prepare_delete_field_query(field.name))
+
             if changes_fields:
                 sql = ",\n".join(changes_fields)
                 sql = f"ALTER TABLE {table_name} \n{sql};"
@@ -74,6 +82,11 @@ class Model:
                     f'Se detectaron cambios sobre el modelo "{table_name}", se ejecuta la siguiente query {sql}'
                 )
                 res = self.database.query(sql)
+
+    def _prepare_delete_field_query(self, col_name):
+        # Elimina el campo de la tabla.
+        query = f"DROP COLUMN {col_name}"
+        return query
 
     def _prepare_create_field_query(self, col_name, propierty, edit=0):
         # TODO: implementar mas opciones, null default, etc.
