@@ -1,6 +1,7 @@
 from .logger import Logger
 from .database.database import Database
 from .web.webServer import WebServer
+from .web.routes.mainRouter import MainRouter
 
 import inspect
 from dotenv import load_dotenv
@@ -12,10 +13,12 @@ load_dotenv()
 class Instance:
     def __init__(self):
         logger.info("Iniciando Instancia")
-        database = Database()
+        self.database = Database()
+        self.mainRouter = MainRouter()
 
     def start(self):
         webServer = WebServer()
+        webServer.mainRouter = self.mainRouter
         webServer.start()
 
     def load_models(self, models):
@@ -27,3 +30,8 @@ class Instance:
                     if isinstance(obj, type):  # Verifica si el atributo es una clase
                         modelo = obj()
                         modelo._make_migrations(modelo)
+
+    def load_controllers(self, controllers):
+        # Se levantan los controladores de tipo get, post, etc.
+        # Levantan los modelos declarados en el backend, y se cargan o modifican en la base de datos.
+        self.mainRouter.init(controllers)

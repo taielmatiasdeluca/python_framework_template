@@ -16,7 +16,7 @@ class Database:
     _instance = None
 
     def __new__(cls):
-        # Permite reutilizar la instancia del logger en memoria al utilizarlo
+        # Permite reutilizar la instancia de la base de datos en memoria al utilizarlo
         if cls._instance is None:
             cls._instance = super().__new__(cls)
         return cls._instance
