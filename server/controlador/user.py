@@ -5,5 +5,7 @@ from base.web.methods import get, post, put, delete
 class User(Controller):
 
     @get("/")
-    def index(self, request):
+    def index(request, headers):
+        print(request)
+        print(headers)
         return "Hola mundo"

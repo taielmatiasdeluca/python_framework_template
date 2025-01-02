@@ -5,9 +5,10 @@ from .web.routes.mainRouter import MainRouter
 
 import inspect
 from dotenv import load_dotenv
-
 logger = Logger()
 load_dotenv()
+
+
 
 
 class Instance:
@@ -15,11 +16,13 @@ class Instance:
         logger.info("Iniciando Instancia")
         self.database = Database()
         self.mainRouter = MainRouter()
+        
 
     def start(self):
         webServer = WebServer()
         webServer.mainRouter = self.mainRouter
         webServer.start()
+        
 
     def load_models(self, models):
         # Levantan los modelos declarados en el backend, y se cargan o modifican en la base de datos.

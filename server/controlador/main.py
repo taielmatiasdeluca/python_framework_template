@@ -4,6 +4,6 @@ from base.web.methods import get, post, put, delete
 
 class Main(Controller):
 
-    @get("/")
+    @get("/main")
     def index(self):
         return "Hola mundo"

@@ -7,10 +7,11 @@ def get(path):
     def decorador(func):
         func.route_path = path
         func.route_method = "GET"
+        
 
         def wrapper(*args, **kwargs):
             result = func(*args, **kwargs)
-            return result, path, "GET"
+            return result, 200
 
         return wrapper
 
@@ -24,7 +25,7 @@ def post(path):
 
         def wrapper(*args, **kwargs):
             result = func(*args, **kwargs)
-            return result, path, "POST"
+            return result, 200
 
         return wrapper
 
@@ -38,7 +39,7 @@ def delete(path):
 
         def wrapper(*args, **kwargs):
             result = func(*args, **kwargs)
-            return result, path, "DELETE"
+            return result, 200
 
         return wrapper
 
@@ -52,7 +53,7 @@ def put(path):
 
         def wrapper(*args, **kwargs):
             result = func(*args, **kwargs)
-            return result, path, "PUT"
+            return result, 200
 
         return wrapper
 

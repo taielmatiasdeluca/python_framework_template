@@ -3,8 +3,7 @@ import threading
 import time
 import os
 from dotenv import load_dotenv
-
-
+import signal
 from ..logger import Logger
 
 load_dotenv()
@@ -28,11 +27,21 @@ class WebServer:
             self.server.listen(1)
         except Exception as e:
             logger.error(e)
+            self.stop_server()
+            exit(-1)
             logger.error("Error al iniciar el servidor web")
+            
+    def stop_server(self, signum=False, frame=False):
+        print('entreeeee')
+        
+        self.server.close()
+        exit(0)
 
     def start(self):
         server_thread = threading.Thread(target=self.run)
+        signal.signal(signal.SIGINT, self.stop_server)
         server_thread.start()
+        
         logger.success(f"Servidor iniciado en segundo plano sobre el puerto {PORT}")
         # Mantener el programa principal en ejecución
         while True:
@@ -53,18 +62,17 @@ class WebServer:
             request_line = request.splitlines()[0]
             method, path, protocol = request_line.split()
             # Procesar headers (opcional)
-            print(method)
-            print(path)
-            
             headers = {}
             for line in request.splitlines()[1:]:
                 if not line:
                     break  # Fin de los headers
                 key, value = line.split(":", 1)
                 headers[key.strip()] = value.strip()
+                
+            response, status_code = self.mainRouter.getResponse(method,path,headers,request)
 
             # Formar la respuesta
-            response = "HTTP/1.1 200 OK\n\nHello from the server!"
+            response = f"HTTP/1.1 {status_code} OK\n\n{response}"
 
             # Personalizar la respuesta en base al path o headers (opcional)
             # ...

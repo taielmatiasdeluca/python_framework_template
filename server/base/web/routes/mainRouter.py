@@ -4,11 +4,18 @@ from ..controller import Controller
 
 # Clase general que detecta las rutas y divide las peticiones segun estas
 class MainRouter:
+    _instance = None
     # Generamos propiedad principal que contiene las rutas
     routes = {"GET": [], "POST": [], "PUT": [], "DELETE": []}
 
-    def __init__(self):
-        pass
+    
+    
+    def __new__(cls):
+        # Permite reutilizar la instancia de la base de datos en memoria al utilizarlo
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+        return cls._instance
+
 
     def init(self, controllers):
         """
@@ -38,4 +45,13 @@ class MainRouter:
                                 self.routes[method].append(
                                     Route(path, obj, method_name)
                                 )
-        print(self.routes)
+      
+    def getResponse(self,method,path,headers,request):
+        routes = self.routes[method]
+        route = next((route for route in routes if route.path == path), None)
+        if not route:
+            return "Not Found", 404
+        print(route)
+        method = getattr(route.obj, route.method)
+        response = method(headers,request)
+        return response
