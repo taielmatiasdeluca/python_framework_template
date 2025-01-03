@@ -30,10 +30,12 @@ class WebServer:
             logger.error(e)
             logger.error("Error al iniciar el servidor web")
             self.stop_server()
-            exit(-1)
             
     def stop_server(self, signum=False, frame=False):
         self.server.close()
+        exit(0)
+        
+        
 
     def start(self):
         server_thread = threading.Thread(target=self.run)
