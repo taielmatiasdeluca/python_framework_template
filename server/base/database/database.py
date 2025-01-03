@@ -15,11 +15,7 @@ logger = Logger()
 class Database:
     _instance = None
 
-    def __new__(cls):
-        # Permite reutilizar la instancia de la base de datos en memoria al utilizarlo
-        if cls._instance is None:
-            cls._instance = super().__new__(cls)
-        return cls._instance
+
 
     def __init__(self):
         logger.info("Iniciando Base de Datos")
@@ -35,7 +31,16 @@ class Database:
     def query(self, query):
         try:
             res = self.cursor.execute(query)
+            self.conn.commit()
             return res
+        except Exception as e:
+            logger.error(str(e))
+            logger.error(f"Error al ejecutar la consulta: '{query}'")
+            
+    def fetchAll(self, query):
+        try:
+            res = self.conn.execute(query)
+            return res.fetchall()
         except Exception as e:
             logger.error(str(e))
             logger.error(f"Error al ejecutar la consulta: '{query}'")

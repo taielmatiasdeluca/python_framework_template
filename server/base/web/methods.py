@@ -9,7 +9,7 @@ logger = Logger()
 def http_method(method, path):
     def decorador(func):
         func.route_path = path
-        func.route_method = "GET"
+        func.route_method = method
         
 
         def wrapper(*args, **kwargs):

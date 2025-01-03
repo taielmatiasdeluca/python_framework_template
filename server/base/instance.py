@@ -1,5 +1,6 @@
 from .logger import Logger
 from .database.database import Database
+from .models.baseModel import BaseModel
 from .web.webServer import WebServer
 from .web.routes.mainRouter import MainRouter
 
@@ -30,9 +31,14 @@ class Instance:
         for nombre_objeto, model_obj in models.__dict__.items():
             if nombre_objeto in models_to_init:
                 for nombre, obj in vars(model_obj).items():
-                    if isinstance(obj, type):  # Verifica si el atributo es una clase
-                        modelo = obj()
-                        modelo._make_migrations(modelo)
+                    if nombre.startswith("__"):
+                        continue
+                    if not isinstance(obj, type) or obj is Database:
+                        continue
+                    if not issubclass(obj, BaseModel):
+                        continue
+                    modelo = obj()
+                    modelo._make_migrations(modelo)
 
     def load_controllers(self, controllers):
         # Se levantan los controladores de tipo get, post, etc.

@@ -33,7 +33,9 @@ class Model:
             fields_sql = []
             for name, propierty in vars(objt.__class__).items():
                 if not name.startswith("__"):
-                    if isinstance(propierty, fields.Field):
+                    if not isinstance(propierty, object):
+                        continue
+                    if issubclass(propierty.__class__, fields.Field):
                         fields_sql.append(self._prepare_field_query(name, propierty))
             sql = ",\n".join(fields_sql)
             sql = f"CREATE TABLE {table_name} (\n{sql}\n);"
@@ -110,4 +112,4 @@ class Model:
         col_type = propierty.col_type
         primary_key = "PRIMARY KEY" if propierty.primary_key else ""
         propierty_query = f"{col_name} {col_type} {primary_key}"
-        return propo
+        return propierty_query
