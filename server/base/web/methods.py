@@ -2,59 +2,30 @@
 #   METODOS HTTP, DECORADORES DISEÑADOS PARA CONTROLADORES
 #
 
+from ..logger import Logger
 
-def get(path):
+logger = Logger()
+
+def http_method(method, path):
     def decorador(func):
         func.route_path = path
         func.route_method = "GET"
         
 
         def wrapper(*args, **kwargs):
-            result = func(*args, **kwargs)
-            return result, 200
-
+            try:
+                result = func(*args, **kwargs)
+                return result, 200
+            except Exception as e:
+                logger.error(e)
         return wrapper
 
     return decorador
 
 
-def post(path):
-    def decorador(func):
-        func.route_path = path
-        func.route_method = "POST"
-
-        def wrapper(*args, **kwargs):
-            result = func(*args, **kwargs)
-            return result, 200
-
-        return wrapper
-
-    return decorador
 
 
-def delete(path):
-    def decorador(func):
-        func.route_path = path
-        func.route_method = "DELETE"
-
-        def wrapper(*args, **kwargs):
-            result = func(*args, **kwargs)
-            return result, 200
-
-        return wrapper
-
-    return decorador
-
-
-def put(path):
-    def decorador(func):
-        func.route_path = path
-        func.route_method = "PUT"
-
-        def wrapper(*args, **kwargs):
-            result = func(*args, **kwargs)
-            return result, 200
-
-        return wrapper
-
-    return decorador
+get = lambda path: http_method("GET", path)
+post = lambda path: http_method("POST", path)
+delete = lambda path: http_method("DELETE", path)
+put = lambda path: http_method("PUT", path)

@@ -5,6 +5,7 @@ import os
 from dotenv import load_dotenv
 import signal
 from ..logger import Logger
+import json
 
 load_dotenv()
 
@@ -27,15 +28,12 @@ class WebServer:
             self.server.listen(1)
         except Exception as e:
             logger.error(e)
+            logger.error("Error al iniciar el servidor web")
             self.stop_server()
             exit(-1)
-            logger.error("Error al iniciar el servidor web")
             
     def stop_server(self, signum=False, frame=False):
-        print('entreeeee')
-        
         self.server.close()
-        exit(0)
 
     def start(self):
         server_thread = threading.Thread(target=self.run)
@@ -62,23 +60,36 @@ class WebServer:
             request_line = request.splitlines()[0]
             method, path, protocol = request_line.split()
             # Procesar headers (opcional)
-            headers = {}
-            for line in request.splitlines()[1:]:
-                if not line:
-                    break  # Fin de los headers
-                key, value = line.split(":", 1)
-                headers[key.strip()] = value.strip()
-                
-            response, status_code = self.mainRouter.getResponse(method,path,headers,request)
-
-            # Formar la respuesta
-            response = f"HTTP/1.1 {status_code} OK\n\n{response}"
-
-            # Personalizar la respuesta en base al path o headers (opcional)
-            # ...
-
+            headers, body = self.process_response(request)
+            if not headers:
+                response = f"HTTP/1.1 400 Bad Request\n\nError al procesar la request"
+                conn.sendall(response.encode())
+            response, status_code = self.mainRouter.getResponse(method,path,headers,body)
+            response = f"HTTP/1.1 {status_code} \n\n{response}"
             conn.sendall(response.encode())
+            
+        
         except Exception as e:
             logger.error(f"Error al manejar la conexión: {e}")
         finally:
             conn.close()
+            
+    def process_response(self,request):
+        try:
+            headers = {}
+            lines = request.splitlines()
+            for line in lines[1:]:
+                if not line:
+                    break  # Fin de los headers
+                key, value = line.split(":", 1)
+                headers[key.strip()] = value.strip()
+            
+            body_start_index = lines.index("") + 1  # Índice de la primera línea del cuerpo
+            body_lines = lines[body_start_index:]
+            body = "\n".join(body_lines)
+            return headers, body
+        except Exception as e:
+            logger.error(f"Error al procesar los headers: {e}")
+            return False
+        
+        

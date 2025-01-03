@@ -1,6 +1,8 @@
 from ..routes.route import Route
 from ..controller import Controller
+from ...logger import Logger
 
+logger = Logger()
 
 # Clase general que detecta las rutas y divide las peticiones segun estas
 class MainRouter:
@@ -35,7 +37,6 @@ class MainRouter:
                         # Obtén solo los métodos definidos en la clase actual
                         for method_name, func in obj.__dict__.items():
                             if callable(func):
-                                print(func)
                                 for cell in func.__closure__:
                                     if hasattr(cell.cell_contents, "route_path"):
                                         original_func = cell.cell_contents
@@ -45,13 +46,17 @@ class MainRouter:
                                 self.routes[method].append(
                                     Route(path, obj, method_name)
                                 )
+                        
       
     def getResponse(self,method,path,headers,request):
         routes = self.routes[method]
+        # TODO largar un mensaje si hay mas de una ruta
+        route = next((route for route in routes if route.path == path), None)
+        if next((route for route in routes if route.path == path), None):
+            logger.error(f"Se encontro mas de una ruta para el path {path}")
         route = next((route for route in routes if route.path == path), None)
         if not route:
             return "Not Found", 404
-        print(route)
         method = getattr(route.obj, route.method)
         response = method(headers,request)
         return response
