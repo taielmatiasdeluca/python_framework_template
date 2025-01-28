@@ -1,4 +1,8 @@
 from datetime import datetime
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 
 CONSOLE_COLORS = {
@@ -8,6 +12,11 @@ CONSOLE_COLORS = {
     "INFO": "\033[33m",
     "RESET": "\033[0m",
 }
+
+
+LOG_FILE = False
+if os.getenv("LOG_FILE"):
+    LOG_FILE = str(os.getenv("LOG_FILE"))
 
 
 class Logger:
@@ -66,6 +75,9 @@ class Logger:
         message (str): El mensaje a imprimir.
         color (str): El color del mensaje.
         """
+        if LOG_FILE:
+            with open(LOG_FILE, "a") as f:
+                f.write(f"[SERVER] {str(type).upper()}: {message}\n")
         print(
             f"{CONSOLE_COLORS[type]}[SERVER] {str(type).upper()}: {message}{CONSOLE_COLORS['RESET']}"
         )
