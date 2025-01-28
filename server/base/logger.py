@@ -69,3 +69,10 @@ class Logger:
         print(
             f"{CONSOLE_COLORS[type]}[SERVER] {str(type).upper()}: {message}{CONSOLE_COLORS['RESET']}"
         )
+
+    def log_execution(self, func):
+        def wrapper(*args, **kwargs):
+            self.info(f"Se ejecutó la función: {func.__name__}")
+            return func(*args, **kwargs)
+
+        return wrapper

@@ -4,50 +4,63 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ejemplo</title>
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
 </head>
 <body>
-    <table>
-        <thead>
-            <tr>
-                <th>Usuario</th>
-                <th>Contraseña</th>
-            </tr>
-        </thead>
-        <tbody>
-            {user_table}
-        </tbody>
-    </table>
+    <main class="bg-gray w-full flex flex-col items-center justify-center">
+        <h1 class="text-3xl font-bold">TAREAS POR HACER</h1>
+        <div class="flex flex-col items-center justify-center">
+            <form id="insert_form" method="post" class="flex flex-col items-center justify-center">
+                <label for="">
+                    Titulo
+                    <input type="text" id="titulo" class="w-full p-2 border-2 border-gray-400 rounded-md" placeholder="titulo...">
+                </label>
+                <label for="">
+                    Descripcion
+                    <textarea type="text" id="descripcion" class="w-full p-2 border-2 border-gray-400 rounded-md" placeholder="descripcion..." >
+                    </textarea> 
+                </label>
+                <button class="w-full p-2 border-2 border-gray-400 rounded-md">Insertar</button>
+            </form>
+            <table class="w-full my-2 border-2 border-gray-400 rounded-md">
+                <thead class="bg-gray-400">
+                    <tr class="text-white">
+                        <th class="p-2">Titulo</th>
+                        <th class="p-2">Descripcion</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-gray-200">
+                    {todo_list}
+                </tbody>
+            </table>
 
-    <form id="insert_form" method="post">
-        <label for="username">Usuario:</label>
-        <input type="text" name="username" id="username">
-        <br>
-        <label for="password">Contraseña:</label>
-        <input type="password" name="password" id="password">
-        <br>
-        <input type="submit" value="Insertar">
-    </form>
+
+
+        </div>
+    </main>
+    
+   
 
     <script>
         const form = document.getElementById('insert_form');
         form.addEventListener('submit', (e) => {
             e.preventDefault();
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
+            const titulo = document.getElementById('titulo').value;
+            const descripcion= document.getElementById('descripcion').value;
             
             body = JSON.stringify({
-                username: username,
-                password: password
+                titulo: titulo,
+                descripcion: descripcion
             });
             
             fetch('/insert', {
                 method: 'POST',
                 body: body
-            }).then(response => response.json()).then(data => {
+            }).then(response => response.text()).then(data => {
                 if (data === 'ok') {
-                    alert('Usuario insertado correctamente');
+                    alert('Tarea insertada correctamente');
                 } else {
-                    alert('Error al insertar el usuario');
+                    alert('Error al insertarla tarea');
                 }
                 window.location.reload();
             });

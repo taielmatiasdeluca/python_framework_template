@@ -30,19 +30,19 @@ class WebServer:
             logger.error(e)
             logger.error("Error al iniciar el servidor web")
             self.stop_server()
-            
+
     def stop_server(self, signum=False, frame=False):
         self.server.close()
         exit(0)
-        
-        
 
     def start(self):
         server_thread = threading.Thread(target=self.run)
         signal.signal(signal.SIGINT, self.stop_server)
         server_thread.start()
-        
-        logger.success(f"Servidor iniciado en segundo plano sobre el puerto {PORT}")
+
+        logger.success(
+            f"Servidor iniciado en segundo plano sobre la siguiente dirección: http://localhost:{PORT}"
+        )
         # Mantener el programa principal en ejecución
         while True:
             time.sleep(1)
@@ -66,17 +66,18 @@ class WebServer:
             if not headers:
                 response = f"HTTP/1.1 400 Bad Request\n\nError al procesar la request"
                 conn.sendall(response.encode())
-            response, status_code = self.mainRouter.getResponse(method,path,headers,body)
+            response, status_code = self.mainRouter.getResponse(
+                method, path, headers, body
+            )
             response = f"HTTP/1.1 {status_code} \n\n{response}"
             conn.sendall(response.encode())
-            
-        
+
         except Exception as e:
             logger.error(f"Error al manejar la conexión: {e}")
         finally:
             conn.close()
-            
-    def process_response(self,request):
+
+    def process_response(self, request):
         try:
             headers = {}
             lines = request.splitlines()
@@ -85,13 +86,13 @@ class WebServer:
                     break  # Fin de los headers
                 key, value = line.split(":", 1)
                 headers[key.strip()] = value.strip()
-            
-            body_start_index = lines.index("") + 1  # Índice de la primera línea del cuerpo
+
+            body_start_index = (
+                lines.index("") + 1
+            )  # Índice de la primera línea del cuerpo
             body_lines = lines[body_start_index:]
             body = "\n".join(body_lines)
             return headers, body
         except Exception as e:
             logger.error(f"Error al procesar los headers: {e}")
             return False
-        
-        

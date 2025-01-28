@@ -4,20 +4,18 @@ from ...logger import Logger
 
 logger = Logger()
 
+
 # Clase general que detecta las rutas y divide las peticiones segun estas
 class MainRouter:
     _instance = None
     # Generamos propiedad principal que contiene las rutas
     routes = {"GET": [], "POST": [], "PUT": [], "DELETE": []}
 
-    
-    
     def __new__(cls):
         # Permite reutilizar la instancia de la base de datos en memoria al utilizarlo
         if cls._instance is None:
             cls._instance = super().__new__(cls)
         return cls._instance
-
 
     def init(self, controllers):
         """
@@ -36,7 +34,7 @@ class MainRouter:
                         continue
                     if not isinstance(obj, type) or obj is Controller:
                         continue
-                    
+
                     if not issubclass(obj, Controller):
                         continue
                     # Obtén solo los métodos definidos en la clase actual
@@ -48,19 +46,17 @@ class MainRouter:
                                     break
                             path = original_func.route_path
                             method = original_func.route_method
-                            self.routes[method].append(
-                                Route(path, obj, method_name)
-                            )
-                        
-      
-    def getResponse(self,method,path,headers,request):
+                            self.routes[method].append(Route(path, obj, method_name))
+
+    def loadStatic(self, static_route):
+        self.routes["GET"].append(Route(static_route, None, "index"))
+
+    def getResponse(self, method, path, headers, request):
         routes = self.routes[method]
         # TODO largar un mensaje si hay mas de una ruta
-        print(path)
         route = next((route for route in routes if route.path == path), None)
-        print(route.path)
         if not route:
             return "Not Found", 404
         method = getattr(route.obj, route.method)
-        response = method(headers,request)
+        response = method(headers, request)
         return response
