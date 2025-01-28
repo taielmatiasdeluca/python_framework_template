@@ -3,9 +3,12 @@ import os
 
 from ..logger import Logger
 
-
+from dotenv import load_dotenv
 from .field import Field
 from .table import Table
+
+load_dotenv()
+
 
 BD_FILE = "./" + str(os.getenv("DB_FILE"))
 
@@ -14,8 +17,6 @@ logger = Logger()
 
 class Database:
     _instance = None
-
-
 
     def __init__(self):
         logger.info("Iniciando Base de Datos")
@@ -36,7 +37,7 @@ class Database:
         except Exception as e:
             logger.error(str(e))
             logger.error(f"Error al ejecutar la consulta: '{query}'")
-            
+
     def fetchAll(self, query):
         try:
             res = self.conn.execute(query)
