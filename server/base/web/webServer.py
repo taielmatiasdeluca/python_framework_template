@@ -43,9 +43,6 @@ class WebServer:
         logger.success(
             f"Servidor iniciado en segundo plano sobre la siguiente dirección: http://localhost:{PORT}"
         )
-        # Mantener el programa principal en ejecución
-        while True:
-            time.sleep(1)
 
     def run(self):
         while True:
@@ -63,6 +60,7 @@ class WebServer:
             method, path, protocol = request_line.split()
             # Procesar headers (opcional)
             headers, body = self.process_response(request)
+
             if not headers:
                 response = f"HTTP/1.1 400 Bad Request\n\nError al procesar la request"
                 conn.sendall(response.encode())
