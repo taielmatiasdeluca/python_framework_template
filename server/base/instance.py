@@ -4,7 +4,7 @@ from .models.baseModel import BaseModel
 from .web.webServer import WebServer
 from .web.routes.mainRouter import MainRouter
 
-import inspect
+import os
 from dotenv import load_dotenv
 
 logger = Logger()
@@ -36,6 +36,14 @@ class Instance:
                         continue
                     modelo = obj()
                     modelo._make_migrations(modelo)
+
+    def load_static(self, path):
+        # Se cargan los archivos estáticos
+        for root, dirs, files in os.walk(path):
+            for file in files:
+                path = os.path.join(root, file)
+                with open(os.path.join(root, file), "r") as f:
+                    self.mainRouter.loadStatic(path, f)
 
     def load_controllers(self, controllers):
         # Se levantan los controladores de tipo get, post, etc.

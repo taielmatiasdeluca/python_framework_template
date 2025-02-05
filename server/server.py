@@ -11,6 +11,7 @@ def main():
     server = Instance()
     server.load_models(modelos)
     server.load_controllers(controlador)
+    server.load_static("static")
     server.start()
 
 

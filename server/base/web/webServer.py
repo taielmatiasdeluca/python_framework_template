@@ -39,10 +39,13 @@ class WebServer:
         server_thread = threading.Thread(target=self.run)
         signal.signal(signal.SIGINT, self.stop_server)
         server_thread.start()
-
         logger.success(
             f"Servidor iniciado en segundo plano sobre la siguiente dirección: http://localhost:{PORT}"
         )
+        try:
+            server_thread.join()
+        except KeyboardInterrupt:
+            self.stop_server()
 
     def run(self):
         while True:
@@ -73,6 +76,7 @@ class WebServer:
         except Exception as e:
             logger.error(f"Error al manejar la conexión: {e}")
         finally:
+            logger.info(f"Se ha cerrado la conexión con {conn.getpeername()}")
             conn.close()
 
     def process_response(self, request):

@@ -1,6 +1,7 @@
 from ..routes.route import Route
 from ..controller import Controller
 from ...logger import Logger
+from ...utils.staticFile import StaticFile
 
 logger = Logger()
 
@@ -48,8 +49,13 @@ class MainRouter:
                             method = original_func.route_method
                             self.routes[method].append(Route(path, obj, method_name))
 
-    def loadStatic(self, static_route):
-        self.routes["GET"].append(Route(static_route, None, "index"))
+    def loadStatic(self, path, file):
+        # Se cargan los archivos estáticos
+        static_route = f"/{path}"
+        file_obj = StaticFile(path, file.read())
+
+        self.routes["GET"].append(Route(static_route, file_obj, "read"))
+        logger.info(f"Se ha cargado el archivo en {static_route}")
 
     def getResponse(self, method, path, headers, request):
         routes = self.routes[method]
