@@ -4,29 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ejemplo</title>
-    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="/static/test.css">
 </head>
 <body>
-    <main class="bg-gray w-full flex flex-col items-center justify-center">
-        <h1 class="text-3xl font-bold">TAREAS POR HACER</h1>
-        <div class="flex flex-col items-center justify-center">
-            <form id="insert_form" method="post" class="flex flex-col items-center justify-center">
+    <main class="main_page">
+        <h1>TAREAS POR HACER</h1>
+        <div class="sub_main">
+            <form id="insert_form" method="post">
                 <label for="">
                     Titulo
-                    <input type="text" id="titulo" class="w-full p-2 border-2 border-gray-400 rounded-md" placeholder="titulo...">
+                    <input type="text" id="titulo"  placeholder="titulo...">
                 </label>
                 <label for="">
                     Descripcion
-                    <textarea type="text" id="descripcion" class="w-full p-2 border-2 border-gray-400 rounded-md" placeholder="descripcion..." >
+                    <textarea type="text" id="descripcion" placeholder="descripcion..." >
                     </textarea> 
                 </label>
-                <button class="w-full p-2 border-2 border-gray-400 rounded-md">Insertar</button>
+                <button>Insertar</button>
             </form>
-            <table class="w-full my-2 border-2 border-gray-400 rounded-md">
-                <thead class="bg-gray-400">
-                    <tr class="text-white">
-                        <th class="p-2">Titulo</th>
-                        <th class="p-2">Descripcion</th>
+            <table>
+                <thead >
+                    <tr>
+                        <th >Titulo</th>
+                        <th >Descripcion</th>
                     </tr>
                 </thead>
                 <tbody class="bg-gray-200">
