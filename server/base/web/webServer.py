@@ -24,6 +24,7 @@ class WebServer:
             logger.error("WEB_PORT no configurado sobre .env")
             return
         try:
+            self.server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             self.server.bind(("", int(PORT)))
             self.server.listen(1)
         except Exception as e:
@@ -37,8 +38,8 @@ class WebServer:
 
     def start(self):
         server_thread = threading.Thread(target=self.run)
-        signal.signal(signal.SIGINT, self.stop_server)
         server_thread.start()
+        signal.signal(signal.SIGINT, self.stop_server)
         logger.success(
             f"Servidor iniciado en segundo plano sobre la siguiente dirección: http://localhost:{PORT}"
         )

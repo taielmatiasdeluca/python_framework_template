@@ -14,6 +14,8 @@ BD_FILE = "./" + str(os.getenv("DB_FILE"))
 
 logger = Logger()
 
+# TODO: base de datos no implementa funcionalidad SINGLETON ya que sqlite3 no soporta utilizacion sobre multiples sockets.
+
 
 class Database:
     _instance = None
@@ -24,7 +26,7 @@ class Database:
             self.conn = sqlite3.connect(BD_FILE)
             self.cursor = self.conn.cursor()
             self.tables = self._init_tables()
-            logger.success("Base de Datos iniciada")
+            logger.success("Cliente de base de datos inicializado")
 
         except Exception as e:
             logger.error(f"Error al iniciar la base de datos: {e}")
